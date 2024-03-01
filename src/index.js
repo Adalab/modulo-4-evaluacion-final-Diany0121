@@ -37,19 +37,45 @@ server.get('/dogs', async(req, res) => {
     res.json({result});
 })
 
-server.post('/dogs', async(req, res) =>{
+server.post('/adddogs', async(req, res) =>{
 
     const data = req.body;
 
-    const {nombreMascota, razaMascota, edadMascota, sexoMascota, descripcionMascota} = data;
+    const {nameDog, raceDog, ageDog, genderDog, descriptionDog} = data;
 
     const conexDataBase = await getDB();
 
-    const sql  = "insert intro dogs (nameDog, raceDog, ageDog, genderDog, descriptionDog) values (?, ?, ?, ?, ?)";
+    const sql  = 'INSERT INTO dogs (nameDog, raceDog, ageDog, genderDog, descriptionDog) values (?, ?, ?, ?, ?)';
 
-    const [result] = await conexDataBase.query(sql, [ nombreMascota, razaMascota, edadMascota, sexoMascota, descripcionMascota
+    const [result] = await conexDataBase.query(sql, [ nameDog, raceDog, ageDog, genderDog, descriptionDog
     ]);
 
-    res.json({result});
+    res.json({seccess: true, message: 'New Dogs'});
 
+})
+
+server.put('/dogs', async(req, res) =>{
+    const conexDataBase = await getDB();
+
+    const idDogs = req.body;
+    const id = req.params.id;
+    const {nameDog, raceDog, ageDog, genderDog, descriptionDog} = idDogs;
+
+    let sql = 'UPDATE dogs set nameDog = ?, raceDog = ?,  ageDog = ?, genderDog = ?, descriptionDog = ? WHERE  id = ?';
+
+    const [result] = await conexDataBase.query(sql, [
+        nameDog, raceDog, ageDog, genderDog, descriptionDog
+    ]);
+
+    conexDataBase.end();
+    res.json({seccess: true, message: 'New We have updated our list of puppies'});
+})
+
+server.delete ('/dogs', async(req, res) =>{
+    const conexDataBase = await getDB();
+    const id = req.query.id;
+    const sql = 'DELETE FROM dogs WHERE id = ?';
+    const [result] = await conexDataBase.query(sql, [id]);
+
+    res.json({result});
 })
